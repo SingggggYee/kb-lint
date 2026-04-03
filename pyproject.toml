@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kb-lint"
+version = "0.1.0"
+description = "A linter for your LLM-compiled knowledge base"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "SingggggYee" }]
+keywords = ["knowledge-base", "linter", "markdown", "wiki", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "click>=8.0",
+    "rich>=13.0",
+    "pyyaml>=6.0",
+    "python-frontmatter>=1.0",
+    "pathspec>=0.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1",
+]
+
+[project.scripts]
+kb-lint = "kb_lint.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/SingggggYee/kb-lint"
+Repository = "https://github.com/SingggggYee/kb-lint"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.kb-lint]
+required_frontmatter = ["title"]
+recommended_frontmatter = ["tags", "sources", "related", "created", "confidence"]
+min_article_words = 100
+ignore_patterns = ["_templates/**", ".git/**", "node_modules/**"]
+checks = ["links", "frontmatter", "orphans", "structure", "content", "index", "consistency"]
+severity_threshold = "info"
