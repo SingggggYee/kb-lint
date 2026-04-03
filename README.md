@@ -1,10 +1,12 @@
 # kb-lint
 
+[![PyPI](https://img.shields.io/pypi/v/kb-lint?style=flat-square)](https://pypi.org/project/kb-lint/) [![Python](https://img.shields.io/badge/python-3.10+-blue?style=flat-square)](https://python.org) [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Tests](https://img.shields.io/badge/tests-47%20passed-brightgreen?style=flat-square)]()
+
 **A linter for your LLM-compiled knowledge base.**
 
 Run health checks over markdown wikis to catch broken links, missing metadata, orphan pages, thin articles, and structural inconsistencies — all without requiring an LLM.
 
-Inspired by [Andrej Karpathy's approach](https://karpathy.ai/) to maintaining LLM-compiled wikis with automated quality checks.
+Inspired by Andrej Karpathy's [LLM Knowledge Bases](https://x.com/karpathy/status/1907477278835749189) workflow — he runs "health checks" over his wiki to "find inconsistent data, impute missing data, find interesting connections for new article candidates."
 
 ## Installation
 
@@ -139,6 +141,12 @@ min_article_words = 100
     pip install kb-lint
     kb-lint ./wiki --ci
 ```
+
+## Part of the LLM KB Ecosystem
+
+- **[awesome-llm-knowledge-bases](https://github.com/SingggggYee/awesome-llm-knowledge-bases)** — Curated list of LLM knowledge base tools
+- **[karpathy-kb-template](https://github.com/SingggggYee/karpathy-kb-template)** — Ready-to-use wiki template
+- **[wiki-compiler](https://github.com/SingggggYee/wiki-compiler)** — CLI to compile raw docs into structured wikis (uses kb-lint internally)
 
 ## Development
 
