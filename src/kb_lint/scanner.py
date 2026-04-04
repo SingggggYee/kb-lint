@@ -90,7 +90,12 @@ def _parse_disable_directives(
 
         # Check disable (range start)
         m = _DISABLE_RE.search(line)
-        if m and not _DISABLE_NEXT_LINE_RE.search(line) and not _DISABLE_FILE_RE.search(line) and not _ENABLE_RE.search(line):
+        if (
+            m
+            and not _DISABLE_NEXT_LINE_RE.search(line)
+            and not _DISABLE_FILE_RE.search(line)
+            and not _ENABLE_RE.search(line)
+        ):
             check_name = m.group(1) or _ALL
             open_ranges[check_name] = line_num
 

@@ -134,7 +134,10 @@ class Config:
         for field_name in ("required_frontmatter", "recommended_frontmatter"):
             value = getattr(self, field_name)
             if not isinstance(value, list) or not all(isinstance(s, str) for s in value):
-                raise ValueError(f"{field_name} must be a list of strings, got {type(value).__name__}")
+                raise ValueError(
+                    f"{field_name} must be a list of strings, "
+                    f"got {type(value).__name__}"
+                )
 
         # 5. check_severity keys must be valid check names, values must be valid severities
         if self.check_severity:
@@ -156,7 +159,8 @@ class Config:
             isinstance(s, str) for s in self.ignore_patterns
         ):
             raise ValueError(
-                f"ignore_patterns must be a list of strings, got {type(self.ignore_patterns).__name__}"
+                "ignore_patterns must be a list of strings, "
+                f"got {type(self.ignore_patterns).__name__}"
             )
 
 

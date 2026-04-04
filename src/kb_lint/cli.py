@@ -111,7 +111,9 @@ def main(
 
     # Auto-fix
     if fix:
-        fix_results, modified_files = apply_fixes(issues, articles, wiki_path, config, dry_run=dry_run)
+        fix_results, modified_files = apply_fixes(
+            issues, articles, wiki_path, config, dry_run=dry_run
+        )
         if fix_results:
             if dry_run:
                 console.print("[yellow bold]Dry run — no files modified:[/yellow bold]")

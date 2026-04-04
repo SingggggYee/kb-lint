@@ -212,7 +212,10 @@ def test_healthy_wiki_exits_zero(runner: CliRunner, healthy_wiki_dir: Path):
     result = runner.invoke(main, [str(healthy_wiki_dir)])
     assert result.exit_code == 0
     # Should not contain ERROR-level issues
-    assert "ERROR" not in (result.output or "").upper().split("SEVERITY")[0] or "error" not in result.output.lower()
+    assert (
+        "ERROR" not in (result.output or "").upper().split("SEVERITY")[0]
+        or "error" not in result.output.lower()
+    )
 
 
 # ---- 2. Unhealthy wiki exits 0 (not CI), shows issues ----
@@ -264,7 +267,11 @@ def test_format_markdown(runner: CliRunner, unhealthy_wiki_dir: Path):
 # ---- 7. --severity error only shows errors ----
 
 def test_severity_error_filter(runner: CliRunner, unhealthy_wiki_dir: Path):
-    result = runner.invoke(main, [str(unhealthy_wiki_dir), "--format", "json", "--severity", "error"])
+    result = runner.invoke(
+        main,
+        [str(unhealthy_wiki_dir), "--format", "json",
+         "--severity", "error"],
+    )
     assert result.exit_code == 0
     data = json.loads(result.output)
     for issue in data["issues"]:
@@ -287,7 +294,11 @@ def test_single_check(runner: CliRunner, unhealthy_wiki_dir: Path):
 # ---- 9. --check links,frontmatter runs multiple checks ----
 
 def test_multiple_checks(runner: CliRunner, unhealthy_wiki_dir: Path):
-    result = runner.invoke(main, [str(unhealthy_wiki_dir), "--format", "json", "--check", "links,frontmatter"])
+    result = runner.invoke(
+        main,
+        [str(unhealthy_wiki_dir), "--format", "json",
+         "--check", "links,frontmatter"],
+    )
     assert result.exit_code == 0
     data = json.loads(result.output)
     checks_used = {issue["check"] for issue in data["issues"]}
@@ -319,7 +330,11 @@ def test_nonexistent_path(runner: CliRunner):
     result = runner.invoke(main, ["/tmp/this-path-absolutely-does-not-exist-kb-lint"])
     # Click should catch the invalid path and report an error
     assert result.exit_code != 0
-    assert "does not exist" in result.output.lower() or "error" in result.output.lower() or "no such" in result.output.lower()
+    assert (
+        "does not exist" in result.output.lower()
+        or "error" in result.output.lower()
+        or "no such" in result.output.lower()
+    )
 
 
 # ---- 12. --fix applies fixes and re-reports ----

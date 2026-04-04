@@ -178,7 +178,10 @@ class TestUnicodeMessages:
         # Verify Unicode is preserved (not ASCII-escaped)
         assert "リンク切れ" in output
         assert "🔥" in output
-        assert data["issues"][0]["message"] == "Emoji path 🔥" or data["issues"][1]["message"] == "Emoji path 🔥"
+        assert (
+            data["issues"][0]["message"] == "Emoji path 🔥"
+            or data["issues"][1]["message"] == "Emoji path 🔥"
+        )
 
 
 class TestLongFilePaths:
@@ -244,7 +247,7 @@ class TestMarkdownPipeEscaping:
         # The raw pipe should be escaped
         assert "Choice A \\| Choice B" in output
         # Table header has exactly 6 pipes per row; data rows should too
-        data_lines = [l for l in output.split("\n") if l.startswith("| WARNING")]
+        data_lines = [line for line in output.split("\n") if line.startswith("| WARNING")]
         assert len(data_lines) == 1
         # Count unescaped pipes (not preceded by backslash)
         import re

@@ -148,7 +148,10 @@ def apply_fixes(
             continue
         if issue.check == "frontmatter":
             frontmatter_files.add(issue.file)
-        elif issue.check == "structure" and ("spaces" in issue.message.lower() or "kebab" in issue.message.lower()):
+        elif issue.check == "structure" and (
+            "spaces" in issue.message.lower()
+            or "kebab" in issue.message.lower()
+        ):
             filename_files.add(issue.file)
         elif issue.check == "index" and "not listed" in issue.message:
             # Extract stem from the suggestion

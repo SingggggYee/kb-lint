@@ -6,7 +6,7 @@ from pathlib import Path
 
 from kb_lint.checks.index import check
 from kb_lint.config import Config
-from kb_lint.models import Article, Severity
+from kb_lint.models import Severity
 from kb_lint.scanner import scan
 
 

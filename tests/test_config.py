@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from kb_lint.config import Config
-from kb_lint.models import Article, Issue, Severity
+from kb_lint.models import Article, Severity
 
 
 def test_default_config_values():
