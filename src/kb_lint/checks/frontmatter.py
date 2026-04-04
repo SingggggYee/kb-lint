@@ -44,7 +44,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         severity=Severity.ERROR,
                         file=article.relative_path,
                         line=1,
-                        message=f"Missing required frontmatter field: {field_name}",
+                        message=f"Missing required field: {field_name}",
                         suggestion=f"Add '{field_name}' to the frontmatter block",
                         fixable=True,
                     )
@@ -56,7 +56,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         severity=Severity.ERROR,
                         file=article.relative_path,
                         line=1,
-                        message=f"Required frontmatter field '{field_name}' is empty",
+                        message=f"Empty required field: '{field_name}' has no value",
                         suggestion=f"Set a value for '{field_name}'",
                         fixable=False,
                     )
@@ -72,7 +72,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                             severity=Severity.INFO,
                             file=article.relative_path,
                             line=1,
-                            message=f"Missing recommended frontmatter field: {field_name}",
+                            message=f"Missing recommended field: {field_name}",
                             suggestion=f"Consider adding '{field_name}' to frontmatter",
                             fixable=True,
                         )
@@ -87,7 +87,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         severity=Severity.WARNING,
                         file=article.relative_path,
                         line=1,
-                        message="Frontmatter 'tags' should be a list",
+                        message="Invalid field type: 'tags' should be a list",
                         suggestion="Use YAML list syntax: tags: [tag1, tag2]",
                         fixable=False,
                     )
@@ -120,8 +120,8 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                             file=article.relative_path,
                             line=1,
                             message=(
-                                f"Frontmatter '{date_field}' does not look"
-                                f" like a valid date: {fm[date_field]}"
+                                f"Invalid date format: '{date_field}'"
+                                f" value '{fm[date_field]}' is not a recognized date"
                             ),
                             suggestion="Use YYYY-MM-DD format",
                             fixable=False,

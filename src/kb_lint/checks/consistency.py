@@ -106,7 +106,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         severity=Severity.WARNING,
                         file=article.relative_path,
                         line=None,
-                        message=f"Confidence level '{conf}' not in allowed set",
+                        message=f"Invalid confidence level: '{conf}'",
                         suggestion=f"Use one of: {allowed}",
                         fixable=False,
                     )

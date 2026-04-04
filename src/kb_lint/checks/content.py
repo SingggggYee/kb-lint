@@ -20,6 +20,13 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
         # Skip _index.md from thin-article checks
         is_index = article.path.name == "_index.md"
 
+        # Pre-compute frontmatter line count for this article
+        fm_lines = 0
+        if article.raw.startswith("---"):
+            end = article.raw.find("---", 3)
+            if end != -1:
+                fm_lines = article.raw[:end + 3].count("\n") + 1
+
         # --- Thin articles ---
         if not is_index and article.word_count < config.min_article_words:
             issues.append(
@@ -40,19 +47,13 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
         # --- Template placeholders ---
         for line_num, line in enumerate(article.content.splitlines(), start=1):
             for match in _PLACEHOLDER_RE.finditer(line):
-                # Offset line number if frontmatter is present
-                fm_lines = 0
-                if article.raw.startswith("---"):
-                    end = article.raw.find("---", 3)
-                    if end != -1:
-                        fm_lines = article.raw[:end + 3].count("\n") + 1
                 issues.append(
                     Issue(
                         check="content",
                         severity=Severity.ERROR,
                         file=article.relative_path,
                         line=line_num + fm_lines,
-                        message=f"Template placeholder left in content: {match.group()}",
+                        message=f"Template placeholder: {match.group()}",
                         suggestion="Replace the placeholder with actual content",
                         fixable=False,
                     )
@@ -70,8 +71,8 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         file=article.relative_path,
                         line=None,
                         message=(
-                            f"Duplicate title '{article.title}'"
-                            f" -- also used by {other.relative_path}"
+                            f"Duplicate title: '{article.title}'"
+                            f", also in {other.relative_path}"
                         ),
                         suggestion="Give each article a unique title",
                         fixable=False,
@@ -94,11 +95,6 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
             if not between:
                 # Calculate line number
                 line_num = article.content[: heading_match.start()].count("\n") + 1
-                fm_lines = 0
-                if article.raw.startswith("---"):
-                    end = article.raw.find("---", 3)
-                    if end != -1:
-                        fm_lines = article.raw[:end + 3].count("\n") + 1
                 issues.append(
                     Issue(
                         check="content",

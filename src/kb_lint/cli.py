@@ -42,6 +42,7 @@ _SEVERITY_MAP = {
     help="Minimum severity to report.",
 )
 @click.option("--fix", is_flag=True, help="Auto-fix simple issues.")
+@click.option("--dry-run", is_flag=True, help="Preview fixes without writing (use with --fix).")
 @click.option(
     "--check", "checks_str",
     default=None,
@@ -56,6 +57,7 @@ def main(
     fmt: str,
     severity: str | None,
     fix: bool,
+    dry_run: bool,
     checks_str: str | None,
     list_checks: bool,
     report: bool,
@@ -77,13 +79,13 @@ def main(
     overrides: dict = {}
     if severity:
         overrides["severity_threshold"] = severity
+
+    selected: list[str] | None = None
     if checks_str:
-        overrides["checks"] = [c.strip() for c in checks_str.split(",")]
+        selected = [c.strip() for c in checks_str.split(",")]
+        overrides["checks"] = selected
 
     config = Config.load(wiki_path, overrides)
-
-    # Parse selected checks
-    selected = [c.strip() for c in checks_str.split(",")] if checks_str else None
 
     # Scan
     articles = scan(wiki_path, config)
@@ -99,18 +101,36 @@ def main(
     threshold = _SEVERITY_MAP.get(config.severity_threshold, Severity.INFO)
     issues = [i for i in issues if i.severity >= threshold]
 
+    # Validate --dry-run usage
+    if dry_run and not fix:
+        console.print(
+            "[red]Error: --dry-run requires --fix. "
+            "Use '--fix --dry-run' to preview changes.[/red]"
+        )
+        sys.exit(2)
+
     # Auto-fix
     if fix:
-        fix_results = apply_fixes(issues, articles, wiki_path, config)
+        fix_results, modified_files = apply_fixes(issues, articles, wiki_path, config, dry_run=dry_run)
         if fix_results:
-            console.print("[green bold]Fixes applied:[/green bold]")
-            for desc in fix_results:
-                console.print(f"  [green]>[/green] {desc}")
-            console.print()
-            # Re-scan and re-check after fixes
-            articles = scan(wiki_path, config)
-            issues = run_checks(articles, config, selected)
-            issues = [i for i in issues if i.severity >= threshold]
+            if dry_run:
+                console.print("[yellow bold]Dry run — no files modified:[/yellow bold]")
+                for desc in fix_results:
+                    console.print(f"  [yellow]~[/yellow] {desc}")
+                console.print()
+            else:
+                console.print("[green bold]Fixes applied:[/green bold]")
+                for desc in fix_results:
+                    console.print(f"  [green]>[/green] {desc}")
+                console.print()
+                # Re-scan only modified files, reusing cached articles for the rest
+                articles = scan(
+                    wiki_path, config,
+                    changed_files=modified_files,
+                    previous_articles=articles,
+                )
+                issues = run_checks(articles, config, selected)
+                issues = [i for i in issues if i.severity >= threshold]
         else:
             console.print("[dim]No auto-fixable issues found.[/dim]\n")
 

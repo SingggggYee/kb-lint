@@ -89,7 +89,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         severity=Severity.INFO,
                         file=article.relative_path,
                         line=None,
-                        message=f"Article is in unrecognized directory: '{top_dir}'",
+                        message=f"Unrecognized directory: '{top_dir}'",
                         suggestion=f"Consider using one of: {recognized}",
                         fixable=False,
                     )

@@ -42,10 +42,10 @@ kb-lint ./my-wiki --fix
 │ Sev │ File                 │  Line │ Check        │ Message                             │
 ├─────┼──────────────────────┼───────┼──────────────┼─────────────────────────────────────┤
 │ E   │ concepts/rlhf.md     │    23 │ links        │ Broken wiki-link: [[ppo-training]]  │
-│ E   │ concepts/scaling.md  │     1 │ frontmatter  │ Missing required field: title        │
-│ W   │ concepts/new-idea.md │     - │ content      │ Thin article: only 42 words          │
-│ W   │ sources/paper-x.md   │     - │ orphans      │ Orphan article: no incoming links    │
-│ I   │ concepts/nlp.md      │     - │ consistency  │ Inconsistent tag casing: NLP vs nlp  │
+│ E   │ concepts/scaling.md  │     1 │ frontmatter  │ Missing required field: title         │
+│ W   │ concepts/new-idea.md │     - │ content      │ Thin article: only 42 words (min 100)│
+│ W   │ sources/paper-x.md   │     - │ orphans      │ Orphan page: no incoming links        │
+│ I   │ concepts/nlp.md      │     - │ consistency  │ Inconsistent tag casing for 'nlp'     │
 └─────┴──────────────────────┴───────┴──────────────┴─────────────────────────────────────┘
 
   2 issues can be auto-fixed with --fix
@@ -57,7 +57,7 @@ Health Score: 82/100
 
 | Check | What it catches | Default severity | Auto-fixable? |
 |-------|----------------|-----------------|---------------|
-| `links` | Broken `[[wiki-links]]` | Error | No |
+| `links` | Broken `[[wiki-links]]` (wiki-links only, no external URLs) | Error | No |
 | `frontmatter` | Missing/invalid YAML frontmatter | Error/Info | Yes (add defaults) |
 | `orphans` | Articles with no incoming links | Warning | No |
 | `structure` | Non-kebab-case filenames, spaces | Error/Warning | Yes (rename) |
@@ -94,7 +94,29 @@ kb-lint [path] --ci
 
 # Auto-fix
 kb-lint [path] --fix
+
+# Preview fixes without applying them
+kb-lint [path] --fix --dry-run
 ```
+
+### `--ci` Mode
+
+In CI mode, kb-lint exits with code 1 if any errors are found:
+
+```bash
+kb-lint [path] --ci
+```
+
+### `--fix` Behavior
+
+`--fix` creates `.bak` backup files before modifying any file. Use `--fix --dry-run` to preview what would be changed without writing to disk.
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success — no errors found (warnings/info may still be present) |
+| `1` | Errors found (only in `--ci` mode) |
 
 ## Configuration
 

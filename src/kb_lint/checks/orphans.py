@@ -4,37 +4,27 @@ from __future__ import annotations
 
 from kb_lint.config import Config
 from kb_lint.models import Article, Issue, Severity
+from kb_lint.resolve import ArticleIndex
 
 
 def check(articles: list[Article], config: Config) -> list[Issue]:
     """Find articles that have no incoming wiki-links from other articles."""
     issues: list[Issue] = []
-
-    # Build a set of all article stems (lowercase)
-    stem_to_article: dict[str, Article] = {}
-    for a in articles:
-        stem_to_article[a.path.stem.lower()] = a
+    idx = ArticleIndex(articles)
 
     # Build incoming link counts
-    incoming: dict[str, int] = {stem: 0 for stem in stem_to_article}
+    incoming: dict[str, int] = {stem: 0 for stem in idx.stems}
 
     for article in articles:
         for link in article.wiki_links:
-            target = link.strip().lower()
-            # Try direct stem match
-            if target in incoming:
-                incoming[target] += 1
-            else:
-                # Try matching link as path (e.g., "concepts/foo")
-                parts = target.rsplit("/", 1)
-                if len(parts) == 2:
-                    leaf = parts[1]
-                    if leaf in incoming:
-                        incoming[leaf] += 1
+            resolved = idx.resolve(link)
+            if resolved is not None:
+                target_stem = resolved.path.stem.lower()
+                incoming[target_stem] = incoming.get(target_stem, 0) + 1
 
     # Report orphans
     for stem, count in incoming.items():
-        article = stem_to_article[stem]
+        article = idx.stem_to_article[stem]
 
         # Skip index files — they are roots, not orphans
         if article.path.name == "_index.md":
@@ -47,8 +37,8 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                     severity=Severity.WARNING,
                     file=article.relative_path,
                     line=None,
-                    message="Orphan article: no other article links to this page",
-                    suggestion="Add a [[wiki-link]] to this article from a related page or index",
+                    message="Orphan page: no incoming links",
+                    suggestion="Add a [[wiki-link]] to this page from a related article or index",
                     fixable=False,
                 )
             )

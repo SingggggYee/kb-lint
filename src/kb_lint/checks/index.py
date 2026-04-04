@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import re
-
 from kb_lint.config import Config
 from kb_lint.models import Article, Issue, Severity
-
-_WIKI_LINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
+from kb_lint.resolve import ArticleIndex
 
 
 def check(articles: list[Article], config: Config) -> list[Issue]:
@@ -40,63 +37,51 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
             )
         return issues
 
+    # Build index from non-index articles only
+    idx = ArticleIndex(non_index_articles)
+
     # Extract all wiki-links from the index
     index_links: set[str] = set()
     for link in index_article.wiki_links:
         index_links.add(link.strip().lower())
 
-    # Build set of article stems
-    article_stems: set[str] = set()
-    stem_to_article: dict[str, Article] = {}
-    for a in non_index_articles:
-        stem = a.path.stem.lower()
-        article_stems.add(stem)
-        stem_to_article[stem] = a
-
     # Check for articles not listed in index
-    for stem in sorted(article_stems):
-        if stem not in index_links:
-            # Also check if any index link resolves to this stem via path
-            found = False
-            for link in index_links:
-                if link.endswith("/" + stem) or link == stem:
-                    found = True
-                    break
-            if not found:
-                article = stem_to_article[stem]
-                issues.append(
-                    Issue(
-                        check="index",
-                        severity=Severity.WARNING,
-                        file=index_article.relative_path,
-                        line=None,
-                        message=f"Article '{article.relative_path}' is not listed in the index",
-                        suggestion=f"Add [[{stem}]] to _index.md",
-                        fixable=True,
-                    )
+    for stem in sorted(idx.stems):
+        # Check if any index link resolves to this article
+        found = False
+        for link in index_links:
+            resolved = idx.resolve(link)
+            if resolved is not None and resolved.path.stem.lower() == stem:
+                found = True
+                break
+        if not found:
+            article = idx.stem_to_article[stem]
+            issues.append(
+                Issue(
+                    check="index",
+                    severity=Severity.WARNING,
+                    file=index_article.relative_path,
+                    line=None,
+                    message=f"Article '{article.relative_path}' is not listed in the index",
+                    suggestion=f"Add [[{stem}]] to _index.md",
+                    fixable=True,
                 )
+            )
 
     # Check for index entries pointing to non-existent articles
     for link in sorted(index_links):
-        normalized = link.strip().lower()
-        # Check against stems
-        if normalized in article_stems:
-            continue
-        # Check path-style links
-        parts = normalized.rsplit("/", 1)
-        if len(parts) == 2 and parts[1] in article_stems:
-            continue
-        issues.append(
-            Issue(
-                check="index",
-                severity=Severity.ERROR,
-                file=index_article.relative_path,
-                line=None,
-                message=f"Index entry [[{link}]] points to a non-existent article",
-                suggestion="Remove this entry or create the missing article",
-                fixable=False,
+        if idx.resolve(link) is None:
+            issues.append(
+                Issue(
+                    check="index",
+                    severity=Severity.ERROR,
+                    file=index_article.relative_path,
+                    line=None,
+                    message=f"Index entry [[{link}]] points to a non-existent article",
+                    suggestion="Remove this entry or create the missing article",
+                    fixable=False,
+                )
             )
-        )
 
     # Check for duplicate entries in index
     link_counts: dict[str, int] = {}

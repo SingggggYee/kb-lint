@@ -88,10 +88,10 @@ def format_terminal(
 
         table = Table(show_header=True, header_style="bold", expand=True)
         table.add_column("Sev", width=3)
-        table.add_column("File", style="cyan", ratio=2)
+        table.add_column("File", style="cyan", ratio=2, overflow="fold")
         table.add_column("Line", width=5, justify="right")
         table.add_column("Check", style="dim", width=12)
-        table.add_column("Message", ratio=4)
+        table.add_column("Message", ratio=4, overflow="fold")
 
         for file_path in sorted(by_file):
             file_issues = sorted(by_file[file_path], key=lambda i: (i.line or 0))
@@ -164,9 +164,13 @@ def format_markdown(
         for issue in file_issues:
             sev = _severity_plain(issue.severity)
             line_str = str(issue.line) if issue.line else "-"
+            # Escape pipe characters to prevent breaking markdown tables
+            safe_path = str(file_path).replace("|", "\\|")
+            safe_message = issue.message.replace("|", "\\|")
+            safe_check = issue.check.replace("|", "\\|")
             lines.append(
-                f"| {sev} | `{file_path}` | {line_str}"
-                f" | {issue.check} | {issue.message} |"
+                f"| {sev} | `{safe_path}` | {line_str}"
+                f" | {safe_check} | {safe_message} |"
             )
 
     lines.append("")
@@ -207,7 +211,7 @@ def format_json(
         ],
     }
 
-    return json.dumps(data, indent=2)
+    return json.dumps(data, indent=2, ensure_ascii=False)
 
 
 __all__ = ["format_terminal", "format_markdown", "format_json"]

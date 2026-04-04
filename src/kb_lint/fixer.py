@@ -127,9 +127,15 @@ def apply_fixes(
     articles: list[Article],
     wiki_path: Path,
     config: Config,
-) -> list[str]:
-    """Apply auto-fixes for all fixable issues. Returns list of fix descriptions."""
+    dry_run: bool = False,
+) -> tuple[list[str], set[Path]]:
+    """Apply auto-fixes for all fixable issues.
+
+    Returns a tuple of (fix descriptions, set of modified file paths).
+    If dry_run is True, reports what would change without writing to files.
+    """
     fixes: list[str] = []
+    modified_files: set[Path] = set()
 
     # Group issues by type for batch operations
     frontmatter_files: set[Path] = set()
@@ -142,20 +148,61 @@ def apply_fixes(
             continue
         if issue.check == "frontmatter":
             frontmatter_files.add(issue.file)
-        elif issue.check == "structure" and "spaces" in issue.message.lower() or (
-            issue.check == "structure" and "kebab" in issue.message.lower()
-        ):
+        elif issue.check == "structure" and ("spaces" in issue.message.lower() or "kebab" in issue.message.lower()):
             filename_files.add(issue.file)
         elif issue.check == "index" and "not listed" in issue.message:
             # Extract stem from the suggestion
             match = re.search(r"\[\[(\w[\w-]*)\]\]", issue.suggestion or "")
             if match:
                 index_missing.append(match.group(1))
-        elif issue.check == "index" and "Duplicate" in issue.message:
+        elif issue.check == "index" and "duplicate" in issue.message.lower():
             index_duplicates = True
 
     # Build lookup from relative path to article
     art_by_rel: dict[Path, Article] = {a.relative_path: a for a in articles}
+
+    if dry_run:
+        # Report planned changes without writing
+        for rel_path in frontmatter_files:
+            article = art_by_rel.get(rel_path)
+            if article:
+                # Determine which fields would be added
+                post = frontmatter.loads(article.raw)
+                added: list[str] = []
+                for field_name in config.required_frontmatter:
+                    if field_name not in post.metadata:
+                        added.append(field_name)
+                for field_name in config.recommended_frontmatter:
+                    if field_name not in post.metadata:
+                        added.append(field_name)
+                if added:
+                    fixes.append(
+                        f"Would add frontmatter fields ({', '.join(added)}) to: {rel_path}"
+                    )
+
+        for rel_path in filename_files:
+            article = art_by_rel.get(rel_path)
+            if article:
+                stem = article.path.stem
+                new_stem = re.sub(r"[^a-z0-9]+", "-", stem.lower()).strip("-")
+                new_name = new_stem + ".md"
+                if new_name != article.path.name:
+                    fixes.append(
+                        f"Would rename: {article.path.name} \u2192 {new_name}"
+                    )
+
+        index_article = next(
+            (a for a in articles if a.path.name == "_index.md"), None
+        )
+        if index_article:
+            if index_missing:
+                fixes.append(
+                    f"Would add {len(index_missing)} entries to _index.md"
+                )
+            if index_duplicates:
+                fixes.append("Would remove duplicate entries from _index.md")
+
+        return fixes, modified_files
 
     # Fix frontmatter
     for rel_path in frontmatter_files:
@@ -164,6 +211,7 @@ def apply_fixes(
             changed, desc = fix_missing_frontmatter(article, config)
             if changed:
                 fixes.append(f"{rel_path}: {desc}")
+                modified_files.add(article.path)
 
     # Fix filenames
     for rel_path in filename_files:
@@ -172,6 +220,7 @@ def apply_fixes(
             changed, desc = fix_filename_casing(article)
             if changed:
                 fixes.append(f"{rel_path}: {desc}")
+                modified_files.add(article.path)
 
     # Fix index
     index_article = next((a for a in articles if a.path.name == "_index.md"), None)
@@ -180,13 +229,15 @@ def apply_fixes(
             changed, desc = fix_index_missing_articles(index_article, index_missing)
             if changed:
                 fixes.append(f"_index.md: {desc}")
+                modified_files.add(index_article.path)
 
         if index_duplicates:
             changed, desc = fix_duplicate_index_entries(index_article)
             if changed:
                 fixes.append(f"_index.md: {desc}")
+                modified_files.add(index_article.path)
 
-    return fixes
+    return fixes, modified_files
 
 
 __all__ = ["apply_fixes"]

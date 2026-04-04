@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import functools
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 
 
+@functools.total_ordering
 class Severity(Enum):
     """Issue severity levels."""
 
@@ -14,29 +16,19 @@ class Severity(Enum):
     WARNING = "warning"
     INFO = "info"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Severity):
+            return NotImplemented
+        return self.value == other.value
+
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, Severity):
             return NotImplemented
         order = {Severity.INFO: 0, Severity.WARNING: 1, Severity.ERROR: 2}
         return order[self] < order[other]
 
-    def __le__(self, other: object) -> bool:
-        if not isinstance(other, Severity):
-            return NotImplemented
-        order = {Severity.INFO: 0, Severity.WARNING: 1, Severity.ERROR: 2}
-        return order[self] <= order[other]
-
-    def __gt__(self, other: object) -> bool:
-        if not isinstance(other, Severity):
-            return NotImplemented
-        order = {Severity.INFO: 0, Severity.WARNING: 1, Severity.ERROR: 2}
-        return order[self] > order[other]
-
-    def __ge__(self, other: object) -> bool:
-        if not isinstance(other, Severity):
-            return NotImplemented
-        order = {Severity.INFO: 0, Severity.WARNING: 1, Severity.ERROR: 2}
-        return order[self] >= order[other]
+    def __hash__(self) -> int:
+        return hash(self.value)
 
 
 @dataclass
@@ -64,6 +56,8 @@ class Article:
     title: str
     wiki_links: list[str] = field(default_factory=list)
     word_count: int = 0
+    disabled_checks: dict[str, list[tuple[int, int]]] = field(default_factory=dict)
+    disabled_file_checks: set[str] = field(default_factory=set)
 
 
 @dataclass
