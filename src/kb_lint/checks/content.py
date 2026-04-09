@@ -25,7 +25,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
         if article.raw.startswith("---"):
             end = article.raw.find("---", 3)
             if end != -1:
-                fm_lines = article.raw[:end + 3].count("\n") + 1
+                fm_lines = article.raw[: end + 3].count("\n") + 1
 
         # --- Thin articles ---
         if not is_index and article.word_count < config.min_article_words:
@@ -71,8 +71,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                         file=article.relative_path,
                         line=None,
                         message=(
-                            f"Duplicate title: '{article.title}'"
-                            f", also in {other.relative_path}"
+                            f"Duplicate title: '{article.title}', also in {other.relative_path}"
                         ),
                         suggestion="Give each article a unique title",
                         fixable=False,

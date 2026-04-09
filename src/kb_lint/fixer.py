@@ -149,8 +149,7 @@ def apply_fixes(
         if issue.check == "frontmatter":
             frontmatter_files.add(issue.file)
         elif issue.check == "structure" and (
-            "spaces" in issue.message.lower()
-            or "kebab" in issue.message.lower()
+            "spaces" in issue.message.lower() or "kebab" in issue.message.lower()
         ):
             filename_files.add(issue.file)
         elif issue.check == "index" and "not listed" in issue.message:
@@ -190,18 +189,12 @@ def apply_fixes(
                 new_stem = re.sub(r"[^a-z0-9]+", "-", stem.lower()).strip("-")
                 new_name = new_stem + ".md"
                 if new_name != article.path.name:
-                    fixes.append(
-                        f"Would rename: {article.path.name} \u2192 {new_name}"
-                    )
+                    fixes.append(f"Would rename: {article.path.name} \u2192 {new_name}")
 
-        index_article = next(
-            (a for a in articles if a.path.name == "_index.md"), None
-        )
+        index_article = next((a for a in articles if a.path.name == "_index.md"), None)
         if index_article:
             if index_missing:
-                fixes.append(
-                    f"Would add {len(index_missing)} entries to _index.md"
-                )
+                fixes.append(f"Would add {len(index_missing)} entries to _index.md")
             if index_duplicates:
                 fixes.append("Would remove duplicate entries from _index.md")
 

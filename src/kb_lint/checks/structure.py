@@ -78,10 +78,7 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
         parts = article.relative_path.parts
         if len(parts) > 1:
             top_dir = parts[0]
-            if (
-                top_dir not in config.recognized_directories
-                and not top_dir.startswith("_")
-            ):
+            if top_dir not in config.recognized_directories and not top_dir.startswith("_"):
                 recognized = ", ".join(config.recognized_directories)
                 issues.append(
                     Issue(

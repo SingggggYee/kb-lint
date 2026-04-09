@@ -38,9 +38,7 @@ def test_kblintrc_yml_parsing(tmp_path):
 def test_pyproject_toml_parsing(tmp_path):
     """Config.load should read [tool.kb-lint] from pyproject.toml."""
     pyproject = tmp_path / "pyproject.toml"
-    pyproject.write_text(
-        '[tool.kb-lint]\nmin_article_words = 200\ncheck_external_urls = true\n'
-    )
+    pyproject.write_text("[tool.kb-lint]\nmin_article_words = 200\ncheck_external_urls = true\n")
     config = Config.load(tmp_path)
     assert config.min_article_words == 200
     assert config.check_external_urls is True
@@ -96,7 +94,7 @@ def test_pyproject_takes_precedence_over_kblintrc(tmp_path):
     rc = tmp_path / ".kblintrc.yml"
     rc.write_text("min_article_words: 50\n")
     pyproject = tmp_path / "pyproject.toml"
-    pyproject.write_text('[tool.kb-lint]\nmin_article_words = 200\n')
+    pyproject.write_text("[tool.kb-lint]\nmin_article_words = 200\n")
     config = Config.load(tmp_path)
     # pyproject.toml is loaded after .kblintrc.yml, so it wins
     assert config.min_article_words == 200
@@ -163,9 +161,7 @@ class TestConfigValidation:
         """A valid custom config should pass validation."""
         rc = tmp_path / ".kblintrc.yml"
         rc.write_text(
-            "checks:\n  - links\n  - orphans\n"
-            "severity_threshold: error\n"
-            "min_article_words: 50\n"
+            "checks:\n  - links\n  - orphans\nseverity_threshold: error\nmin_article_words: 50\n"
         )
         config = Config.load(tmp_path)
         assert config.checks == ["links", "orphans"]

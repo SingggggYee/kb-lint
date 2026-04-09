@@ -85,9 +85,9 @@ def check(articles: list[Article], config: Config) -> list[Issue]:
                             file=a.relative_path,
                             line=None,
                             message=(
-                            f"Inconsistent date format: uses {fmt}"
-                            f" while most articles use {most_common_fmt}"
-                        ),
+                                f"Inconsistent date format: uses {fmt}"
+                                f" while most articles use {most_common_fmt}"
+                            ),
                             suggestion=f"Standardize to {most_common_fmt} format",
                             fixable=False,
                         )

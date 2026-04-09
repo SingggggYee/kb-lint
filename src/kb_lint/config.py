@@ -37,12 +37,8 @@ class Config:
         default_factory=lambda: list(_DEFAULTS["recommended_frontmatter"])
     )
     min_article_words: int = _DEFAULTS["min_article_words"]
-    ignore_patterns: list[str] = field(
-        default_factory=lambda: list(_DEFAULTS["ignore_patterns"])
-    )
-    checks: list[str] = field(
-        default_factory=lambda: list(_DEFAULTS["checks"])
-    )
+    ignore_patterns: list[str] = field(default_factory=lambda: list(_DEFAULTS["ignore_patterns"]))
+    checks: list[str] = field(default_factory=lambda: list(_DEFAULTS["checks"]))
     severity_threshold: str = _DEFAULTS["severity_threshold"]
     recognized_directories: list[str] = field(
         default_factory=lambda: list(_DEFAULTS["recognized_directories"])
@@ -135,8 +131,7 @@ class Config:
             value = getattr(self, field_name)
             if not isinstance(value, list) or not all(isinstance(s, str) for s in value):
                 raise ValueError(
-                    f"{field_name} must be a list of strings, "
-                    f"got {type(value).__name__}"
+                    f"{field_name} must be a list of strings, got {type(value).__name__}"
                 )
 
         # 5. check_severity keys must be valid check names, values must be valid severities

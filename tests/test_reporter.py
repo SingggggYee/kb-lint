@@ -251,7 +251,8 @@ class TestMarkdownPipeEscaping:
         assert len(data_lines) == 1
         # Count unescaped pipes (not preceded by backslash)
         import re
-        unescaped = re.findall(r'(?<!\\)\|', data_lines[0])
+
+        unescaped = re.findall(r"(?<!\\)\|", data_lines[0])
         assert len(unescaped) == 6  # exactly 6 column delimiters
 
     def test_pipe_in_filepath(self):

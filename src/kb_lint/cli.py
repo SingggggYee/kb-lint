@@ -30,7 +30,8 @@ _SEVERITY_MAP = {
     type=click.Path(exists=True, file_okay=False, resolve_path=True),
 )
 @click.option(
-    "--format", "fmt",
+    "--format",
+    "fmt",
     type=click.Choice(["terminal", "markdown", "json"]),
     default="terminal",
     help="Output format.",
@@ -44,7 +45,8 @@ _SEVERITY_MAP = {
 @click.option("--fix", is_flag=True, help="Auto-fix simple issues.")
 @click.option("--dry-run", is_flag=True, help="Preview fixes without writing (use with --fix).")
 @click.option(
-    "--check", "checks_str",
+    "--check",
+    "checks_str",
     default=None,
     help="Comma-separated list of checks to run.",
 )
@@ -104,8 +106,7 @@ def main(
     # Validate --dry-run usage
     if dry_run and not fix:
         console.print(
-            "[red]Error: --dry-run requires --fix. "
-            "Use '--fix --dry-run' to preview changes.[/red]"
+            "[red]Error: --dry-run requires --fix. Use '--fix --dry-run' to preview changes.[/red]"
         )
         sys.exit(2)
 
@@ -127,7 +128,8 @@ def main(
                 console.print()
                 # Re-scan only modified files, reusing cached articles for the rest
                 articles = scan(
-                    wiki_path, config,
+                    wiki_path,
+                    config,
                     changed_files=modified_files,
                     previous_articles=articles,
                 )

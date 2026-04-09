@@ -66,12 +66,8 @@ def test_custom_min_words(tmp_path):
 
 
 def test_duplicate_titles(tmp_path, default_config):
-    (tmp_path / "a.md").write_text(
-        "---\ntitle: Same Title\n---\n" + "Content words " * 20 + "\n"
-    )
-    (tmp_path / "b.md").write_text(
-        "---\ntitle: Same Title\n---\n" + "Content words " * 20 + "\n"
-    )
+    (tmp_path / "a.md").write_text("---\ntitle: Same Title\n---\n" + "Content words " * 20 + "\n")
+    (tmp_path / "b.md").write_text("---\ntitle: Same Title\n---\n" + "Content words " * 20 + "\n")
     articles = scan(tmp_path, default_config)
     issues = check(articles, default_config)
     dup_issues = [i for i in issues if "duplicate title" in i.message.lower()]

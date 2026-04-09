@@ -94,7 +94,7 @@ def format_terminal(
         table.add_column("Message", ratio=4, overflow="fold")
 
         for file_path in sorted(by_file):
-            file_issues = sorted(by_file[file_path], key=lambda i: (i.line or 0))
+            file_issues = sorted(by_file[file_path], key=lambda i: i.line or 0)
             for issue in file_issues:
                 table.add_row(
                     _severity_icon(issue.severity),
@@ -111,9 +111,7 @@ def format_terminal(
         if fixable:
             n = len(fixable)
             s = "s" if n != 1 else ""
-            console.print(
-                f"\n[dim]{n} issue{s} can be auto-fixed with --fix[/dim]"
-            )
+            console.print(f"\n[dim]{n} issue{s} can be auto-fixed with --fix[/dim]")
 
     if is_report:
         score = _health_score(issues)
@@ -160,7 +158,7 @@ def format_markdown(
     lines.append("|----------|------|------|-------|---------|")
 
     for file_path in sorted(by_file):
-        file_issues = sorted(by_file[file_path], key=lambda i: (i.line or 0))
+        file_issues = sorted(by_file[file_path], key=lambda i: i.line or 0)
         for issue in file_issues:
             sev = _severity_plain(issue.severity)
             line_str = str(issue.line) if issue.line else "-"
@@ -168,10 +166,7 @@ def format_markdown(
             safe_path = str(file_path).replace("|", "\\|")
             safe_message = issue.message.replace("|", "\\|")
             safe_check = issue.check.replace("|", "\\|")
-            lines.append(
-                f"| {sev} | `{safe_path}` | {line_str}"
-                f" | {safe_check} | {safe_message} |"
-            )
+            lines.append(f"| {sev} | `{safe_path}` | {line_str} | {safe_check} | {safe_message} |")
 
     lines.append("")
     return "\n".join(lines)

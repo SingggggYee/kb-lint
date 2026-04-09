@@ -208,6 +208,7 @@ filename itself is the issue being tested here.
 
 # ---- 1. Healthy wiki exits 0, no errors ----
 
+
 def test_healthy_wiki_exits_zero(runner: CliRunner, healthy_wiki_dir: Path):
     result = runner.invoke(main, [str(healthy_wiki_dir)])
     assert result.exit_code == 0
@@ -220,6 +221,7 @@ def test_healthy_wiki_exits_zero(runner: CliRunner, healthy_wiki_dir: Path):
 
 # ---- 2. Unhealthy wiki exits 0 (not CI), shows issues ----
 
+
 def test_unhealthy_wiki_exits_zero_without_ci(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(main, [str(unhealthy_wiki_dir)])
     assert result.exit_code == 0
@@ -230,6 +232,7 @@ def test_unhealthy_wiki_exits_zero_without_ci(runner: CliRunner, unhealthy_wiki_
 
 # ---- 3. --ci on unhealthy wiki exits 1 ----
 
+
 def test_ci_unhealthy_exits_one(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(main, [str(unhealthy_wiki_dir), "--ci"])
     assert result.exit_code == 1
@@ -237,12 +240,14 @@ def test_ci_unhealthy_exits_one(runner: CliRunner, unhealthy_wiki_dir: Path):
 
 # ---- 4. --ci on healthy wiki exits 0 ----
 
+
 def test_ci_healthy_exits_zero(runner: CliRunner, healthy_wiki_dir: Path):
     result = runner.invoke(main, [str(healthy_wiki_dir), "--ci"])
     assert result.exit_code == 0
 
 
 # ---- 5. --format json outputs valid JSON ----
+
 
 def test_format_json(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(main, [str(unhealthy_wiki_dir), "--format", "json"])
@@ -257,6 +262,7 @@ def test_format_json(runner: CliRunner, unhealthy_wiki_dir: Path):
 
 # ---- 6. --format markdown outputs markdown ----
 
+
 def test_format_markdown(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(main, [str(unhealthy_wiki_dir), "--format", "markdown"])
     assert result.exit_code == 0
@@ -266,11 +272,11 @@ def test_format_markdown(runner: CliRunner, unhealthy_wiki_dir: Path):
 
 # ---- 7. --severity error only shows errors ----
 
+
 def test_severity_error_filter(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(
         main,
-        [str(unhealthy_wiki_dir), "--format", "json",
-         "--severity", "error"],
+        [str(unhealthy_wiki_dir), "--format", "json", "--severity", "error"],
     )
     assert result.exit_code == 0
     data = json.loads(result.output)
@@ -281,6 +287,7 @@ def test_severity_error_filter(runner: CliRunner, unhealthy_wiki_dir: Path):
 
 
 # ---- 8. --check links only runs links check ----
+
 
 def test_single_check(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(main, [str(unhealthy_wiki_dir), "--format", "json", "--check", "links"])
@@ -293,11 +300,11 @@ def test_single_check(runner: CliRunner, unhealthy_wiki_dir: Path):
 
 # ---- 9. --check links,frontmatter runs multiple checks ----
 
+
 def test_multiple_checks(runner: CliRunner, unhealthy_wiki_dir: Path):
     result = runner.invoke(
         main,
-        [str(unhealthy_wiki_dir), "--format", "json",
-         "--check", "links,frontmatter"],
+        [str(unhealthy_wiki_dir), "--format", "json", "--check", "links,frontmatter"],
     )
     assert result.exit_code == 0
     data = json.loads(result.output)
@@ -310,6 +317,7 @@ def test_multiple_checks(runner: CliRunner, unhealthy_wiki_dir: Path):
 
 
 # ---- 10. --list-checks shows available checks ----
+
 
 def test_list_checks(runner: CliRunner):
     result = runner.invoke(main, ["--list-checks"])
@@ -326,6 +334,7 @@ def test_list_checks(runner: CliRunner):
 
 # ---- 11. nonexistent path handled gracefully ----
 
+
 def test_nonexistent_path(runner: CliRunner):
     result = runner.invoke(main, ["/tmp/this-path-absolutely-does-not-exist-kb-lint"])
     # Click should catch the invalid path and report an error
@@ -338,6 +347,7 @@ def test_nonexistent_path(runner: CliRunner):
 
 
 # ---- 12. --fix applies fixes and re-reports ----
+
 
 def test_fix_applies_and_reruns(runner: CliRunner, unhealthy_wiki_dir: Path):
     # First run without fix to capture baseline issues
