@@ -170,6 +170,28 @@ min_article_words = 100
 - **[karpathy-kb-template](https://github.com/SingggggYee/karpathy-kb-template)** — Ready-to-use wiki template
 - **[wiki-compiler](https://github.com/SingggggYee/wiki-compiler)** — CLI to compile raw docs into structured wikis (uses kb-lint internally)
 
+## FAQ
+
+### How do I lint a markdown knowledge base?
+
+Install kb-lint with `pip install kb-lint`, then run `kb-lint ./your-wiki` to scan all markdown files. Use `--report` to get a health score, or `--ci` for CI pipelines that should fail on errors.
+
+### What does kb-lint check?
+
+kb-lint checks for broken `[[wiki-links]]`, missing YAML frontmatter, orphan pages with no incoming links, thin articles below a word count threshold, structural issues like non-kebab-case filenames, and inconsistencies in tags, dates, and confidence levels.
+
+### Can kb-lint auto-fix issues?
+
+Yes. Run `kb-lint ./your-wiki --fix` to auto-fix supported issues like missing frontmatter defaults, non-kebab-case filenames, and out-of-date index files. Use `--fix --dry-run` to preview changes before applying them.
+
+### Does kb-lint work with Obsidian vaults?
+
+kb-lint works with any folder of markdown files that uses `[[wiki-links]]`. Obsidian vaults fit this pattern well. Just point kb-lint at your vault directory and it will scan all `.md` files, including nested folders.
+
+### How is kb-lint different from markdownlint?
+
+markdownlint checks markdown syntax and formatting (heading style, line length, etc.). kb-lint checks knowledge base structure — broken wiki-links, orphan pages, missing metadata, thin content, and cross-article consistency. They complement each other.
+
 ## Development
 
 ```bash
