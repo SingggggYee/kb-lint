@@ -4,9 +4,9 @@
 
 **A linter for your LLM-compiled knowledge base.**
 
-Run health checks over markdown wikis to catch broken links, missing metadata, orphan pages, thin articles, and structural inconsistencies — all without requiring an LLM.
+Run health checks over markdown wikis to catch broken links, missing metadata, orphan pages, thin articles, and structural inconsistencies - all without requiring an LLM.
 
-Inspired by Andrej Karpathy's [LLM Knowledge Bases](https://x.com/karpathy/status/1907477278835749189) workflow — he runs "health checks" over his wiki to "find inconsistent data, impute missing data, find interesting connections for new article candidates."
+Inspired by Andrej Karpathy's [LLM Knowledge Bases](https://x.com/karpathy/status/1907477278835749189) workflow - he runs "health checks" over his wiki to "find inconsistent data, impute missing data, find interesting connections for new article candidates."
 
 ## Installation
 
@@ -115,7 +115,7 @@ kb-lint [path] --ci
 
 | Code | Meaning |
 |------|---------|
-| `0` | Success — no errors found (warnings/info may still be present) |
+| `0` | Success - no errors found (warnings/info may still be present) |
 | `1` | Errors found (only in `--ci` mode) |
 
 ## Configuration
@@ -166,9 +166,9 @@ min_article_words = 100
 
 ## Part of the LLM KB Ecosystem
 
-- **[awesome-llm-knowledge-bases](https://github.com/SingggggYee/awesome-llm-knowledge-bases)** — Curated list of LLM knowledge base tools
-- **[karpathy-kb-template](https://github.com/SingggggYee/karpathy-kb-template)** — Ready-to-use wiki template
-- **[wiki-compiler](https://github.com/SingggggYee/wiki-compiler)** — CLI to compile raw docs into structured wikis (uses kb-lint internally)
+- **[awesome-llm-knowledge-bases](https://github.com/SingggggYee/awesome-llm-knowledge-bases)** - Curated list of LLM knowledge base tools
+- **[karpathy-kb-template](https://github.com/SingggggYee/karpathy-kb-template)** - Ready-to-use wiki template
+- **[wiki-compiler](https://github.com/SingggggYee/wiki-compiler)** - CLI to compile raw docs into structured wikis (uses kb-lint internally)
 
 ## FAQ
 
@@ -190,7 +190,7 @@ kb-lint works with any folder of markdown files that uses `[[wiki-links]]`. Obsi
 
 ### How is kb-lint different from markdownlint?
 
-markdownlint checks markdown syntax and formatting (heading style, line length, etc.). kb-lint checks knowledge base structure — broken wiki-links, orphan pages, missing metadata, thin content, and cross-article consistency. They complement each other.
+markdownlint checks markdown syntax and formatting (heading style, line length, etc.). kb-lint checks knowledge base structure - broken wiki-links, orphan pages, missing metadata, thin content, and cross-article consistency. They complement each other.
 
 ## Development
 
