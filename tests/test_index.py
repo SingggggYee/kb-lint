@@ -36,7 +36,7 @@ def test_missing_article_in_index(tmp_path):
     config = Config()
     articles = scan(tmp_path, config)
     issues = check(articles, config)
-    missing = [i for i in issues if "Missing from index" in i.message]
+    missing = [i for i in issues if "not listed in the index" in i.message]
     assert len(missing) == 1
     assert "concept-b" in missing[0].message
 
@@ -89,7 +89,7 @@ def test_no_index_file(tmp_path):
     config = Config()
     articles = scan(tmp_path, config)
     issues = check(articles, config)
-    no_index = [i for i in issues if "Missing index" in i.message]
+    no_index = [i for i in issues if "No _index.md found" in i.message]
     assert len(no_index) == 1
     assert no_index[0].severity == Severity.WARNING
 
