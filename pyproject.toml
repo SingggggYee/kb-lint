@@ -46,6 +46,7 @@ kb-lint = "kb_lint.cli:main"
 [project.urls]
 Homepage = "https://github.com/SingggggYee/kb-lint"
 Repository = "https://github.com/SingggggYee/kb-lint"
+Issues = "https://github.com/SingggggYee/kb-lint/issues"
 
 [tool.mypy]
 python_version = "3.10"
