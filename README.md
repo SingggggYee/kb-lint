@@ -4,9 +4,23 @@
 
 **A linter for your LLM-compiled knowledge base.**
 
-Run health checks over markdown wikis to catch broken links, missing metadata, orphan pages, thin articles, and structural inconsistencies - all without requiring an LLM.
+## TL;DR
 
-Inspired by Andrej Karpathy's [LLM Knowledge Bases](https://x.com/karpathy/status/1907477278835749189) workflow - he runs "health checks" over his wiki to "find inconsistent data, impute missing data, find interesting connections for new article candidates."
+kb-lint is a fast, dependency-free markdown knowledge base linter. It checks Obsidian vaults, Foam workspaces, Dendron notes, and any wiki of markdown files for broken wiki-links, missing frontmatter, orphan pages, thin articles, and structural inconsistencies. No LLM required.
+
+Run health checks over markdown wikis to catch broken links, missing metadata, orphan pages, thin articles, and structural inconsistencies, all without requiring an LLM.
+
+Inspired by Andrej Karpathy's [LLM Knowledge Bases](https://x.com/karpathy/status/1907477278835749189) workflow, he runs "health checks" over his wiki to "find inconsistent data, impute missing data, find interesting connections for new article candidates."
+
+## Use Cases
+
+- Lint an Obsidian vault for broken wiki-links and orphan pages
+- Check Foam or Dendron notes for missing frontmatter
+- Validate a Quartz or Jekyll markdown wiki before publishing
+- Find thin or stub articles in a personal knowledge base
+- Detect inconsistent tags and casing across markdown files
+- Run health checks on an LLM-compiled wiki (Karpathy workflow)
+- Add markdown wiki linting to CI/CD with `kb-lint --format json`
 
 ## Installation
 
@@ -174,23 +188,43 @@ min_article_words = 100
 
 ### How do I lint a markdown knowledge base?
 
-Install kb-lint with `pip install kb-lint`, then run `kb-lint ./your-wiki` to scan all markdown files. Use `--report` to get a health score, or `--ci` for CI pipelines that should fail on errors.
+Install kb-lint with `pip install kb-lint`, then run `kb-lint ./your-wiki` to scan all markdown files. Use `--report` to get a health score, or `--ci` for CI pipelines that should fail on errors. As a markdown knowledge base linter, kb-lint covers broken links, frontmatter, orphans, and structural checks in a single pass.
 
 ### What does kb-lint check?
 
-kb-lint checks for broken `[[wiki-links]]`, missing YAML frontmatter, orphan pages with no incoming links, thin articles below a word count threshold, structural issues like non-kebab-case filenames, and inconsistencies in tags, dates, and confidence levels.
+kb-lint checks for broken `[[wiki-links]]`, missing YAML frontmatter, orphan pages with no incoming links, thin articles below a word count threshold, structural issues like non-kebab-case filenames, and inconsistencies in tags, dates, and confidence levels. Think of it as an end-to-end personal knowledge management quality check.
 
 ### Can kb-lint auto-fix issues?
 
 Yes. Run `kb-lint ./your-wiki --fix` to auto-fix supported issues like missing frontmatter defaults, non-kebab-case filenames, and out-of-date index files. Use `--fix --dry-run` to preview changes before applying them.
 
+### How do I lint an Obsidian vault?
+
+Point kb-lint at your vault root: `kb-lint ~/path/to/your-vault --report`. It walks every `.md` file (including nested folders), resolves `[[wiki-links]]` across the whole graph, and produces an Obsidian vault health check covering broken links, orphan notes, missing frontmatter, and tag inconsistencies. No plugins required.
+
 ### Does kb-lint work with Obsidian vaults?
 
 kb-lint works with any folder of markdown files that uses `[[wiki-links]]`. Obsidian vaults fit this pattern well. Just point kb-lint at your vault directory and it will scan all `.md` files, including nested folders.
 
+### Does kb-lint work with Foam, Dendron, and Quartz?
+
+Yes. kb-lint is intentionally tool-agnostic. If your notes are plain markdown files with `[[wiki-links]]` and optional YAML frontmatter, kb-lint works as a wiki-link validator for Foam workspaces, Dendron hierarchies, Quartz digital gardens, Jekyll wikis, and custom setups. Configure `ignore_patterns` in `.kblintrc.yml` to skip tool-specific folders like `.obsidian/` or `_layouts/`.
+
+### How do I detect orphan pages in my knowledge base?
+
+Run `kb-lint ./your-wiki --check orphans` to list every article that has zero incoming wiki-links. Combine with `--format json` to pipe results into other tools, or with `--report` to see orphan counts next to your overall health score. This is one of the most useful checks for cleaning up a personal knowledge base.
+
+### What's the best linter for a markdown wiki?
+
+For pure markdown syntax (heading style, line length), use `markdownlint`. For knowledge base structure (broken wiki-links, orphans, frontmatter, thin content, tag consistency), use kb-lint. They are complementary, most teams run both in CI.
+
+### Can I use kb-lint in a GitHub Actions workflow?
+
+Yes. kb-lint is designed for CI/CD. Install it in a workflow step and run `kb-lint ./wiki --ci` to fail the build on errors, or `kb-lint ./wiki --format json > report.json` to archive a machine-readable report. See the [CI Integration](#ci-integration) section above for a ready-to-paste GitHub Actions snippet.
+
 ### How is kb-lint different from markdownlint?
 
-markdownlint checks markdown syntax and formatting (heading style, line length, etc.). kb-lint checks knowledge base structure - broken wiki-links, orphan pages, missing metadata, thin content, and cross-article consistency. They complement each other.
+markdownlint checks markdown syntax and formatting (heading style, line length, etc.). kb-lint checks knowledge base structure, broken wiki-links, orphan pages, missing metadata, thin content, and cross-article consistency. They complement each other.
 
 ## Development
 
