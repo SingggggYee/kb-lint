@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kb-lint"
-version = "0.1.1"
-description = "A linter for your LLM-compiled knowledge base"
+version = "0.1.2"
+description = "Markdown knowledge base linter for Obsidian, Foam, Dendron & Quartz: finds broken wiki-links, orphan notes, and missing frontmatter"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [{ name = "SingggggYee" }]
-keywords = ["knowledge-base", "linter", "markdown", "wiki", "llm"]
+keywords = ["knowledge-base", "linter", "markdown", "wiki", "llm", "obsidian", "foam", "dendron", "quartz", "digital-garden", "wiki-links", "backlinks"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
