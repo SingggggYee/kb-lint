@@ -133,7 +133,7 @@ def _parse_article(md_file: Path, rel: Path) -> Article | None:
     word_count = len(words)
 
     # Derive title
-    title = fm.get("title", "")
+    title = str(fm.get("title", "") or "")
     if not title:
         for line in content.splitlines():
             stripped = line.strip()
